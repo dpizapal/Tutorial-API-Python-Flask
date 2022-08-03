@@ -1,33 +1,37 @@
-#cabecera
-from flask import Flask, jsonify
-from flask import request
-from flask import Flask
+# cabecera
+from flask import Flask, jsonify, request
 app = Flask(__name__)
+import json
+todos = [
+    { "label": "Sample", "done": True }
+]
 
-
-
-#variable
-todos = [ { "label": "My first task", "done": False } ]
-
-#GET
+# GET endpoint
 @app.route('/todos', methods=['GET'])
-def hello_world():
-    json_text = jsonify(todos)
-    return json_text
+def tasker():
+    json_todos = jsonify(todos)
+    return json_todos
 
-#POST
+# POST endpoint
 @app.route('/todos', methods=['POST'])
 def add_new_todo():
-    request_body = request.json
-    todos.append(request_body)
-    return jsonify(todos)
+    decoded_object = json.loads(request.data)
+    todos.append(decoded_object)
+    request_body = request.data
+    print("Incoming request with the following body", request_body)
+    json_todos = jsonify(todos)
+    return json_todos
 
-#DELETE
+# DELETE endpoint
 @app.route('/todos/<int:position>', methods=['DELETE'])
 def delete_todo(position):
     print("This is the position to delete: ",position)
-    return 'something'
+    del todos[position]
+    json_todos = jsonify(todos)
+    return json_todos
 
-#final
+# al final
 if __name__ == '__main__':
   app.run(host='0.0.0.0', port=3245, debug=True)
+
+# luego se ejecuta en el terminal: pipenv run python src/app.py
